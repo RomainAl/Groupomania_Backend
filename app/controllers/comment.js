@@ -1,8 +1,8 @@
 const db = require("../models");
-const Comment = db.comments;
+const Comment = db.comment;
 const Op = db.Sequelize.Op;
 
-// Create and Save a new Tutorial
+// Create and Save a new comment
 exports.create = (req, res) => {
   // Validate request
   if (!req.body.name) {
@@ -11,20 +11,20 @@ exports.create = (req, res) => {
     });
     return;
   }
-  if (!req.body.tutorialId) {
+  if (!req.body.subjectId) {
     res.status(400).send({
-      message: 'Content "tutorialId" can not be empty!'
+      message: 'Content "subjectId" can not be empty!'
     });
     return;
   }
-  // Create a Tutorial
+  // Create a comment
   const comment = {
     name: req.body.name,
     text: req.body.text,
-    tutorialId: req.body.tutorialId,
+    subjectId: req.body.subjectId,
   };
 
-  // Save Tutorial in the database
+  // Save comment in the database
   Comment.create(comment)
     .then(data => {
       res.send(data);
@@ -37,14 +37,14 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve all Tutorials from the database.
+// Retrieve all comments from the database.
 exports.findAll = (req, res) => {
   const name = req.query.name;
   var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
 
   Comment.findAll({ 
     where: condition,
-    include: ["tutorial"]  })
+    include: ["subject"]  })
     .then(data => {
       res.send(data);
     })
@@ -56,11 +56,11 @@ exports.findAll = (req, res) => {
     });
 };
 
-// Find a single Tutorial with an id
+// Find a single comment with an id
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Comment.findByPk(id, { include: ["tutorial"] })
+  Comment.findByPk(id, { include: ["subject"] })
     .then(data => {
       if (data) {
         res.send(data);
@@ -77,13 +77,13 @@ exports.findOne = (req, res) => {
     });
 };
 
-// Update a Tutorial by the id in the request
+// Update a comment by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
 
   Comment.update(req.body, {
     where: { id: id },
-    include: ["tutorial"] 
+    include: ["subject"] 
   })
     .then(num => {
       if (num == 1) {
@@ -103,7 +103,7 @@ exports.update = (req, res) => {
     });
 };
 
-// Delete a Tutorial with the specified id in the request
+// Delete a comment with the specified id in the request
 exports.delete = (req, res) => {
   const id = req.params.id;
 
@@ -128,7 +128,7 @@ exports.delete = (req, res) => {
     });
 };
 
-// Delete all Tutorials from the database.
+// Delete all comments from the database.
 exports.deleteAll = (req, res) => {
   Comment.destroy({
     where: {},
@@ -140,7 +140,7 @@ exports.deleteAll = (req, res) => {
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while removing all tutorials."
+          err.message || "Some error occurred while removing all comments."
       });
     });
 };

@@ -1,5 +1,4 @@
 const dbConfig = require("../config/db.config.js");
-
 const Sequelize = require("sequelize");
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
@@ -19,13 +18,13 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.comments = require("./comment.model.js")(sequelize, Sequelize);
-db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
+db.comment = require("./comment.js")(sequelize, Sequelize);
+db.subject = require("./subject.js")(sequelize, Sequelize);
 
-db.tutorials.hasMany(db.comments, { as: "comments" });
-db.comments.belongsTo(db.tutorials, {
-  foreignKey: "tutorialId",
-  as: "tutorial",
+db.subject.hasMany(db.comment, { as: "comment" });
+db.comment.belongsTo(db.subject, {
+  foreignKey: "subjectId",
+  as: "subject",
 });
 
 module.exports = db;
