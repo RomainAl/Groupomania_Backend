@@ -3,7 +3,7 @@ const Comment = db.comment;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new comment
-exports.create = (req, res) => {
+exports.create = (req, res, next) => {
   // Validate request
   if (!req.body.name) {
     res.status(400).send({
@@ -38,7 +38,7 @@ exports.create = (req, res) => {
 };
 
 // Retrieve all comments from the database.
-exports.findAll = (req, res) => {
+exports.findAll = (req, res, next) => {
   const name = req.query.name;
   var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
 
@@ -57,7 +57,7 @@ exports.findAll = (req, res) => {
 };
 
 // Find a single comment with an id
-exports.findOne = (req, res) => {
+exports.findOne = (req, res, next) => {
   const id = req.params.id;
 
   Comment.findByPk(id, { include: ["subject"] })
@@ -78,7 +78,7 @@ exports.findOne = (req, res) => {
 };
 
 // Update a comment by the id in the request
-exports.update = (req, res) => {
+exports.update = (req, res, next) => {
   const id = req.params.id;
 
   Comment.update(req.body, {
@@ -104,7 +104,7 @@ exports.update = (req, res) => {
 };
 
 // Delete a comment with the specified id in the request
-exports.delete = (req, res) => {
+exports.delete = (req, res, next) => {
   const id = req.params.id;
 
   Comment.destroy({
@@ -129,7 +129,7 @@ exports.delete = (req, res) => {
 };
 
 // Delete all comments from the database.
-exports.deleteAll = (req, res) => {
+exports.deleteAll = (req, res, next) => {
   Comment.destroy({
     where: {},
     truncate: false

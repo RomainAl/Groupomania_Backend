@@ -4,7 +4,7 @@ const Comment = db.comment;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new subject
-exports.create = (req, res) => {
+exports.create = (req, res, next) => {
   
   // Validate request
   if (!req.body.title) {
@@ -22,7 +22,7 @@ exports.create = (req, res) => {
   };
 
   // Save subject in the database
-  Subject.create(subject)
+  Subject.create(subject, next)
     .then(data => {
       res.send(data);
     })
@@ -36,7 +36,7 @@ exports.create = (req, res) => {
 };
 
 // Retrieve all subjects from the database.
-exports.findAll = (req, res) => {
+exports.findAll = (req, res, next) => {
 
   const title = req.query.title;
   var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
@@ -55,7 +55,7 @@ exports.findAll = (req, res) => {
 };
 
 // Find a single subject with an id
-exports.findOne = (req, res) => {
+exports.findOne = (req, res, next) => {
 
   const id = req.params.id;
 
@@ -78,7 +78,7 @@ exports.findOne = (req, res) => {
 };
 
 // Update a subject by the id in the request
-exports.update = (req, res) => {
+exports.update = (req, res, next) => {
 
   const id = req.params.id;
 
@@ -106,7 +106,7 @@ exports.update = (req, res) => {
 };
 
 // Delete a subject with the specified id in the request
-exports.delete = (req, res) => {
+exports.delete = (req, res, next) => {
 
   const id = req.params.id;
 
@@ -145,7 +145,7 @@ exports.delete = (req, res) => {
 };
 
 // Delete all subjects from the database.
-exports.deleteAll = (req, res) => {
+exports.deleteAll = (req, res, next) => {
 
   Comment.destroy({
     where: {},
@@ -176,7 +176,7 @@ exports.deleteAll = (req, res) => {
 };
 
 // find all published subject
-exports.findAllPublished = (req, res) => {
+exports.findAllPublished = (req, res, next) => {
 
   Subject.findAll({ where: { published: true } })
     .then(data => {

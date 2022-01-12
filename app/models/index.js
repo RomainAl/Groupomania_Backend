@@ -18,6 +18,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+db.user = require("./user.js")(sequelize, Sequelize);
 db.comment = require("./comment.js")(sequelize, Sequelize);
 db.subject = require("./subject.js")(sequelize, Sequelize);
 
@@ -25,6 +26,18 @@ db.subject.hasMany(db.comment, { as: "comment" });
 db.comment.belongsTo(db.subject, {
   foreignKey: "subjectId",
   as: "subject",
+});
+
+db.user.hasMany(db.subject, { as: "subject" });
+db.subject.belongsTo(db.user, {
+  foreignKey: "userId",
+  as: "user",
+});
+
+db.user.hasMany(db.comment, { as: "comment" });
+db.comment.belongsTo(db.user, {
+  foreignKey: "userId",
+  as: "user",
 });
 
 module.exports = db;

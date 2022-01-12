@@ -7,14 +7,15 @@ const db = require("./models");
 
 const commentRoutes = require('./routes/comment');
 const subjectRoutes = require('./routes/subject');
+const userRoutes = require('./routes/user');
 
 const app = express();
 
-//db.sequelize.sync();
+db.sequelize.sync();
 // // drop the table if it already exists
-db.sequelize.sync({ force: true }).then(() => {
-   console.log("Drop and re-sync db.");
-});
+//db.sequelize.sync({ force: true }).then(() => {
+//   console.log("Drop and re-sync db.");
+//});
 
 var corsOptions = { origin: "http://localhost:8081" };
 app.use(cors(corsOptions));
@@ -24,5 +25,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/comment', commentRoutes);
 app.use('/api/subject', subjectRoutes);
+app.use('/api/auth', userRoutes);
 
 module.exports = app;
