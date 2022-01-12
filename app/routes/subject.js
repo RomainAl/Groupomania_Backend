@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const subjectCtrl = require('../controllers/subject');
 const auth = require("../middleware/auth");
+const isAdmin = require("../middleware/isAdmin");
 
 // Create a new Tutorial
 router.post("/", auth, subjectCtrl.create);

@@ -18,7 +18,8 @@ exports.create = (req, res, next) => {
   const subject = {
     title: req.body.title,
     description: req.body.description,
-    published: req.body.published ? req.body.published : false
+    published: req.body.published ? req.body.published : false,
+    userId: req.userId
   };
 
   // Save subject in the database
@@ -41,7 +42,7 @@ exports.findAll = (req, res, next) => {
   const title = req.query.title;
   var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
 
-  Subject.findAll({ where: condition, include: ["comment"] })
+  Subject.findAll({ where: condition, include: ["comment", "user"] })
     .then(data => {
       res.send(data);
     })

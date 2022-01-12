@@ -22,6 +22,7 @@ exports.create = (req, res, next) => {
     name: req.body.name,
     text: req.body.text,
     subjectId: req.body.subjectId,
+    userId: req.userId
   };
 
   // Save comment in the database
@@ -44,7 +45,7 @@ exports.findAll = (req, res, next) => {
 
   Comment.findAll({ 
     where: condition,
-    include: ["subject"]  })
+    include: ["subject", "user"]  })
     .then(data => {
       res.send(data);
     })

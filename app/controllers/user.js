@@ -37,29 +37,37 @@ exports.signin = (req, res, next) => {
         where: {
           username: req.body.username
         }
-     })
+      })
         .then(user => {
-        if (!user) {
+          if (!user) {
             return res.status(404).send({ message: "User Not found." });
-        }
-        bcrypt.compare(req.body.password, user.password)
-            .then(valid => {
-                if (!valid) {
-                    return res.status(401).json({ error: 'Mot de passe incorrect !' });
-                }
-                res.status(200).json({
-                    userId: user.id,
-                    username: user.username,
-                    email: user.email,
-                    role: user.role,
-                    token: jwt.sign(
-                        { userId: user._id },
-                        config.secret,
-                        { expiresIn: '24h' }
-                    )
-                });
-            })
-            .catch(error => res.status(500).json({ error }));
+          }
+    
+          var passwordIsValid = bcrypt.compareSync(
+            req.body.password,
+            user.password
+          );
+    
+          if (!passwordIsValid) {
+            return res.status(401).send({
+              accessToken: null,
+              message: "Invalid Password!"
+            });
+          }
+    
+          var token = jwt.sign({ id: user.id }, config.secret, {
+            expiresIn: 86400 // 24 hours
+          });
+
+            res.status(200).send({
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                accessToken: token
+            });
+
         })
-        .catch(error => res.status(500).json({ error }));
+        .catch(err => {
+          res.status(500).send({ message: err.message });
+        });
 };
