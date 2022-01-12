@@ -10,12 +10,15 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
       unique: true,
-      len: [2,50]
+      len: [5,50],
+      validate: {
+        is: /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i
+      }
     },
     password: {
       type: Sequelize.STRING,
       allowNull: false,
-      len: [2,50]
+      len: [5,50]
     },
     role: {
       type: Sequelize.STRING,

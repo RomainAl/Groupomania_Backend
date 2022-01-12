@@ -1,16 +1,11 @@
 const db = require("../models");
 const Comment = db.comment;
+const User = db.user;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new comment
 exports.create = (req, res, next) => {
   // Validate request
-  if (!req.body.name) {
-    res.status(400).send({
-      message: 'Content "name" can not be empty!'
-    });
-    return;
-  }
   if (!req.body.subjectId) {
     res.status(400).send({
       message: 'Content "subjectId" can not be empty!'
@@ -19,7 +14,6 @@ exports.create = (req, res, next) => {
   }
   // Create a comment
   const comment = {
-    name: req.body.name,
     text: req.body.text,
     subjectId: req.body.subjectId,
     userId: req.userId
@@ -40,11 +34,8 @@ exports.create = (req, res, next) => {
 
 // Retrieve all comments from the database.
 exports.findAll = (req, res, next) => {
-  const name = req.query.name;
-  var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
-
   Comment.findAll({ 
-    where: condition,
+    where: {},
     include: ["subject", "user"]  })
     .then(data => {
       res.send(data);
@@ -61,7 +52,7 @@ exports.findAll = (req, res, next) => {
 exports.findOne = (req, res, next) => {
   const id = req.params.id;
 
-  Comment.findByPk(id, { include: ["subject"] })
+  Comment.findByPk(id, { include: ["subject", "user"] })
     .then(data => {
       if (data) {
         res.send(data);
@@ -81,25 +72,47 @@ exports.findOne = (req, res, next) => {
 // Update a comment by the id in the request
 exports.update = (req, res, next) => {
   const id = req.params.id;
+  Comment.findByPk(id, { include: ["user"] })
+  .then(data => {
 
-  Comment.update(req.body, {
-    where: { id: id },
-    include: ["subject"] 
-  })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Comment was updated successfully."
+    User.findByPk(req.userId).then(user => {
+
+      if ((user.role !== 'admin') && (data.userId !== req.userId)){
+
+        res.status(403).send({
+          message: "Require to be The user or administrator !"
         });
+        return;
+
       } else {
-        res.send({
-          message: `Cannot update Comment with id=${id}. Maybe Comment was not found or req.body is empty!`
-        });
-      }
+
+        Comment.update(req.body, {
+          where: { id: id }
+        })
+          .then(num => {
+            if (num == 1) {
+              res.send({
+                message: "Comment was updated successfully."
+              });
+            } else {
+              res.send({
+                message: `Cannot update Comment with id=${id}. Maybe Comment was not found or req.body is empty!`
+              });
+            }
+          })
+          .catch(err => {
+            res.status(500).send({
+              message: "Error updating Comment with id=" + id
+            });
+          });
+
+        }
+      })
     })
     .catch(err => {
       res.status(500).send({
-        message: "Error updating Comment with id=" + id
+        message:
+          err.message || "Some error occurred while updating comment."
       });
     });
 };
@@ -107,41 +120,67 @@ exports.update = (req, res, next) => {
 // Delete a comment with the specified id in the request
 exports.delete = (req, res, next) => {
   const id = req.params.id;
-
-  Comment.destroy({
-    where: { id: id }
-  })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Comment was deleted successfully!"
+  Comment.findByPk(id, { include: ["user"] })
+  .then(data => {
+    User.findByPk(req.userId).then(user => {
+      if ((user.role !== 'admin') && (data.userId !== req.userId)){
+        res.status(403).send({
+          message: "Require to be The user or administrator !"
         });
+        return;
       } else {
-        res.send({
-          message: `Cannot delete Comment with id=${id}. Maybe Comment was not found!`
+        Comment.destroy({
+          where: { id: id }
+        })
+          .then(num => {
+            if (num == 1) {
+              res.send({
+                message: "Comment was deleted successfully!"
+              });
+            } else {
+              res.send({
+                message: `Cannot delete Comment with id=${id}. Maybe Comment was not found!`
+              });
+            }
+          })
+          .catch(err => {
+            res.status(500).send({
+              message: "Could not delete Comment with id=" + id
+            });
+          });
+          }
+        })
+      })
+      .catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while deleting comment."
         });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Could not delete Comment with id=" + id
       });
-    });
 };
 
 // Delete all comments from the database.
 exports.deleteAll = (req, res, next) => {
-  Comment.destroy({
-    where: {},
-    truncate: false
-  })
-    .then(nums => {
-      res.send({ message: `${nums} Comment were deleted successfully!` });
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all comments."
+  User.findByPk(req.userId).then(user => {
+    if (user.role !== 'admin'){
+      res.status(403).send({
+        message: "Require to be administrator !"
       });
-    });
+      return;
+    } else {
+      Comment.destroy({
+        where: {},
+        truncate: false
+      })
+        .then(nums => {
+          res.send({ message: `${nums} Comment were deleted successfully!` });
+        })
+        .catch(err => {
+          res.status(500).send({
+            message:
+              err.message || "Some error occurred while removing all comments."
+          });
+        });
+      }
+    })
 };

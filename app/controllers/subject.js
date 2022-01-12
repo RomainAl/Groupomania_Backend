@@ -1,24 +1,25 @@
 const db = require("../models");
 const Subject = db.subject;
 const Comment = db.comment;
+const User = db.user;
 const Op = db.Sequelize.Op;
+const fs = require('fs');
 
 // Create and Save a new subject
 exports.create = (req, res, next) => {
   
-  // Validate request
-  if (!req.body.title) {
-    res.status(400).send({
-      message: "Content can not be empty!"
-    });
-    return;
+  if (req.file === undefined){
+    subjectObject = { ...req.body };
+  } else {
+    subjectObject = {
+      ...JSON.parse(req.body.subject),
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    };
   }
 
   // Create a subject
   const subject = {
-    title: req.body.title,
-    description: req.body.description,
-    published: req.body.published ? req.body.published : false,
+    ...subjectObject,
     userId: req.userId
   };
 
@@ -60,7 +61,7 @@ exports.findOne = (req, res, next) => {
 
   const id = req.params.id;
 
-  Subject.findByPk(id, { include: ["comment"] })
+  Subject.findByPk(id, { include: ["comment", "user"] })
     .then(data => {
       if (data) {
         res.send(data);
@@ -83,24 +84,55 @@ exports.update = (req, res, next) => {
 
   const id = req.params.id;
 
-  Subject.update(req.body, {
-    where: { id: id },
-    include: ["comment"]
-  })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "subject was updated successfully."
-        });
-      } else {
-        res.send({
-          message: `Cannot update subject with id=${id}. Maybe subject was not found or req.body is empty!`
-        });
-      }
+  if (req.file === undefined){ 
+    subjectObject = { ...req.body };
+  } else {
+    subjectObject = {
+      ...JSON.parse(req.body.subject),
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    };
+  }
+
+  Subject.findByPk(id, { include: ["user"] })
+    .then(data => {
+
+      User.findByPk(req.userId).then(user => {
+
+        if ((user.role !== 'admin') && (data.userId !== req.userId)){
+
+          res.status(403).send({
+            message: "Require to be The user or administrator !"
+          });
+          return;
+
+        } else {
+
+          Subject.update(req.body, {
+            where: { id: id }
+          })
+            .then(num => {
+              if (num == 1) {
+                res.send({
+                  message: "subject was updated successfully."
+                });
+              } else {
+                res.send({
+                  message: `Cannot update subject with id=${id}. Maybe subject was not found or req.body is empty!`
+                });
+              }
+            })
+            .catch(err => {
+              res.status(500).send({
+                message: "Error updating subject with id=" + id
+              });
+            });
+        }
+      })
     })
     .catch(err => {
       res.status(500).send({
-        message: "Error updating subject with id=" + id
+        message:
+          err.message || "Some error occurred while updating subject."
       });
     });
 
@@ -111,54 +143,85 @@ exports.delete = (req, res, next) => {
 
   const id = req.params.id;
 
-  Comment.destroy({
-    where: {subjectId: id},
-    truncate: false
-  })
-    .then(nums => {
-      Subject.destroy({
-        where: { id: id }
-      })
-        .then(num => {
-          if (num == 1) {
-            res.send({
-              message: "subject was deleted successfully!"
-            });
-          } else {
-            res.send({
-              message: `Cannot delete subject with id=${id}. Maybe subject was not found!`
-            });
-          }
-        })
-        .catch(err => {
-          res.status(500).send({
-            message: "Could not delete subject with id=" + id
+  Subject.findByPk(id, { include: ["user"] })
+    .then(data => {
+      User.findByPk(req.userId).then(user => {
+        if ((user.role !== 'admin') && (data.userId !== req.userId)){
+          res.status(403).send({
+            message: "Require to be The user or administrator !"
           });
-        });
+          return;
+        } else {
+          Comment.destroy({
+            where: {subjectId: id},
+            truncate: false
+          })
+            .then(nums => {
+              Subject.destroy({
+                where: { id: id }
+              })
+                .then(num => {
+                  if (num == 1) {
+                    res.send({
+                      message: "subject was deleted successfully!"
+                    });
+                  } else {
+                    res.send({
+                      message: `Cannot delete subject with id=${id}. Maybe subject was not found!`
+                    });
+                  }
+                })
+                .catch(err => {
+                  res.status(500).send({
+                    message: "Could not delete subject with id=" + id
+                  });
+                });
+            })
+            .catch(err => {
+              res.status(500).send({
+                message:
+                  err.message || "Some error occurred while removing all subjects."
+              });
+            });
+        }
+      })
     })
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while removing all subjects."
+          err.message || "Some error occurred while deleting subject."
       });
     });
-
 };
 
 // Delete all subjects from the database.
 exports.deleteAll = (req, res, next) => {
 
-  Comment.destroy({
-    where: {},
-    truncate: false
-  })
-    .then(nums => {
-      Subject.destroy({
+  User.findByPk(req.userId).then(user => {
+    if (user.role !== 'admin'){
+      res.status(403).send({
+        message: "Require to be administrator !"
+      });
+      return;
+    } else {
+      Comment.destroy({
         where: {},
         truncate: false
       })
         .then(nums => {
-          res.send({ message: `${nums} subjects were deleted successfully!` });
+          Subject.destroy({
+            where: {},
+            truncate: false
+          })
+            .then(nums => {
+              res.send({ message: `${nums} subjects were deleted successfully!` });
+            })
+            .catch(err => {
+              res.status(500).send({
+                message:
+                  err.message || "Some error occurred while removing all subjects."
+              });
+            });
         })
         .catch(err => {
           res.status(500).send({
@@ -166,13 +229,8 @@ exports.deleteAll = (req, res, next) => {
               err.message || "Some error occurred while removing all subjects."
           });
         });
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all subjects."
-      });
-    });
+      }
+  })
 
 };
 

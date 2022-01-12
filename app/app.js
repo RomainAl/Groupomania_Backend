@@ -8,6 +8,7 @@ const db = require("./models");
 const commentRoutes = require('./routes/comment');
 const subjectRoutes = require('./routes/subject');
 const userRoutes = require('./routes/user');
+const path = require('path');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/comment', commentRoutes);
 app.use('/api/subject', subjectRoutes);
 app.use('/api/auth', userRoutes);

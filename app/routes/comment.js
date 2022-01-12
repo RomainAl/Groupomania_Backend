@@ -18,7 +18,7 @@ router.put("/:id", auth, commentCtrl.update);
 // Delete a Comment with id
 router.delete("/:id", auth, commentCtrl.delete);
 
-// Delete all Comment
+// Delete all Comments
 router.delete("/", auth, commentCtrl.deleteAll);
 
 module.exports = router;

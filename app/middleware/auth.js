@@ -18,8 +18,12 @@ module.exports = (req, res, next) => {
       }
 
       req.userId = decoded.id;
-      console.log("pouetepouete");
-      console.log(req.userId);
+      if (!req.userId){
+        return res.status(401).send({
+            message: "Token is not corresponding with a user id !"
+          });
+      }
+      
       next();
     });
 };

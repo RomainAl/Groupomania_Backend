@@ -2,27 +2,27 @@ const express = require('express');
 const router = express.Router();
 const subjectCtrl = require('../controllers/subject');
 const auth = require("../middleware/auth");
-const isAdmin = require("../middleware/isAdmin");
+const multer = require('../middleware/multer-config');
 
-// Create a new Tutorial
-router.post("/", auth, subjectCtrl.create);
+// Create a new Subject
+router.post("/", auth, multer, subjectCtrl.create);
 
-// Retrieve all Tutorials
+// Retrieve all Subjects
 router.get("/", auth, subjectCtrl.findAll);
 
-// Retrieve all published Tutorials
+// Retrieve all published Subjects
 router.get("/published", auth, subjectCtrl.findAllPublished);
 
-// Retrieve a single Tutorial with id
+// Retrieve a single Subject with id
 router.get("/:id", auth, subjectCtrl.findOne);
 
-// Update a Tutorial with id
-router.put("/:id", auth, subjectCtrl.update);
+// Update a Subject with id
+router.put("/:id", auth, multer, subjectCtrl.update);
 
-// Delete a Tutorial with id
+// Delete a Subject with id
 router.delete("/:id", auth, subjectCtrl.delete);
 
-// Delete all Tutorials
+// Delete all Subjects
 router.delete("/", auth, subjectCtrl.deleteAll);
 
 module.exports = router;
