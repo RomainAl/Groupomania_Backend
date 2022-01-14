@@ -13,7 +13,7 @@ exports.create = (req, res, next) => {
   } else {
     subjectObject = {
       ...JSON.parse(req.body.subject),
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+      imageUrl: `${req.protocol}://${req.get('host')}/app/images/${req.file.filename}`
     };
   }
 
@@ -89,7 +89,7 @@ exports.update = (req, res, next) => {
   } else {
     subjectObject = {
       ...JSON.parse(req.body.subject),
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+      imageUrl: `${req.protocol}://${req.get('host')}/app/images/${req.file.filename}`
     };
   }
 

@@ -7,7 +7,9 @@ module.exports = (sequelize, Sequelize) => {
       unique: true,
     },
     description: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: false,
+      len: [1,30],
     },
     text: {
       type: Sequelize.STRING,
@@ -19,7 +21,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     published: {
       type: Sequelize.BOOLEAN,
-      defaultValue: false
+      defaultValue: true
     }
   });
 

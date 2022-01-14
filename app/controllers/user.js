@@ -21,7 +21,7 @@ exports.signup = (req, res, next) => {
   // Save comment in the database
   User.create(user)
     .then(data => {
-      res.send(data);
+      res.send({ data: data , message: "User registered successfully !" });
     })
     .catch(err => {
       res.status(500).send({
