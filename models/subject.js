@@ -1,20 +1,29 @@
 module.exports = (sequelize, Sequelize) => {
-  const Subject = sequelize.define("subject", {
+  const Subject = sequelize.define("subjects", {
     title: {
       type: Sequelize.STRING,
       allowNull: false,
-      len: [1,300],
       unique: true,
+      validate: {
+        len: {
+            args: [1, 30],
+            msg: 'Your title may be 2 to 30 characters only.'
+        }
+      }
     },
     description: {
       type: Sequelize.STRING,
       allowNull: false,
-      len: [1,30],
+      validate: {
+        len: {
+            args: [1, 50],
+            msg: 'Your description may be 2 to 50 characters only.'
+        }
+      }
     },
     text: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING(1234),
       allowNull: false,
-      len: [1,300]
     },
     imageUrl: {
       type: Sequelize.STRING
