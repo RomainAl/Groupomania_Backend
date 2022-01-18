@@ -1,3 +1,6 @@
+//-----------------------------------
+// Middlewares "Métiers" des commenaires
+//-----------------------------------
 const db = require("../models");
 const Comment = db.comment;
 const User = db.user;

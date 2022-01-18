@@ -1,3 +1,7 @@
+//-------------------------
+// CONFIGURATION DU SERVEUR
+// ET CHARGE/LANCE l'APP
+//-------------------------
 const http = require('http');
 const app = require('./app');
 

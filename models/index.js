@@ -1,3 +1,8 @@
+//-----------------------------------
+// Permets de configurer et créer la 
+// database et ses tables, et de les 
+// lier en eux ("hasmany")
+//-----------------------------------
 const dbConfig = require("../config/db.config.js");
 const Sequelize = require("sequelize");
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {

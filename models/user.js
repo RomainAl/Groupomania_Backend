@@ -1,3 +1,6 @@
+//-----------------------------------
+// Schema model MySQL pour les Users
+//-----------------------------------
 module.exports = (sequelize, Sequelize) => {
   const User = sequelize.define("users", {
     username: {

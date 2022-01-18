@@ -1,4 +1,7 @@
-const db = require("../models");
+//-----------------------------------
+// Middlewares "Métiers" des subjects
+//-----------------------------------
+const db = require("../models"); // charge la data base (my SQL)
 const Subject = db.subject;
 const Comment = db.comment;
 const User = db.user;
@@ -155,6 +158,7 @@ exports.delete = (req, res, next) => {
           });
           return;
         } else {
+          // Suppression des commentaires liées au subject :
           Comment.destroy({
             where: {subjectId: id},
             truncate: false
@@ -207,6 +211,7 @@ exports.deleteAll = (req, res, next) => {
       });
       return;
     } else {
+      // Suppression du commentaire lié au subject :
       Comment.destroy({
         where: {},
         truncate: false

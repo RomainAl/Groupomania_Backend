@@ -1,4 +1,8 @@
-const jwt = require("jsonwebtoken");
+//-----------------------------------
+// Middleware d'authentification
+//-----------------------------------
+
+const jwt = require("jsonwebtoken");// permet de vérifier le Token user
 const config = require("../config/auth.config.js");
 
 module.exports = (req, res, next) => {

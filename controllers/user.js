@@ -3,8 +3,8 @@
 //-----------------------------------
 const bcrypt = require('bcrypt'); // pour crypter les mots de passe
 const jwt = require('jsonwebtoken'); // permet de créer un token lors de la connexion du user
-const db = require("../models");
-const config = require("../config/auth.config");
+const db = require("../models"); // charge les bases de données
+const config = require("../config/auth.config"); // charge les configurations d'authority pour la création des tokens
 const User = db.user;
 const Op = db.Sequelize.Op;
 
@@ -98,13 +98,10 @@ exports.update = (req, res, next) => {
 
   } else {
 
-
-
     userObject = { ...req.body };
     if (req.body.password !== undefined){
       userObject.password = bcrypt.hashSync(req.body.password, 10);
     }
-
 
     User.update(userObject, {
       where: { id: id }

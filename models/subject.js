@@ -1,3 +1,6 @@
+//-----------------------------------
+// Schema model MySQL pour les subjects
+//-----------------------------------
 module.exports = (sequelize, Sequelize) => {
   const Subject = sequelize.define("subjects", {
     title: {
