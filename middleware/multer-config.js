@@ -1,8 +1,8 @@
 //---------------------------------------------------------
 // Middleware de création du fichier image sur le serveur
 //---------------------------------------------------------
-const multer = require('multer');
-
+const multer = require("multer");
+const maxSize = 2 * 1024 * 1024;
 const MIME_TYPES = {
   'image/jpg': 'jpg',
   'image/jpeg': 'jpg',
@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
     const name = file.originalname.split(' ').join('_');
     const extension = MIME_TYPES[file.mimetype];
     callback(null, name + Date.now() + '.' + extension);
-  }
+  },
 });
 
-module.exports = multer({storage: storage}).single('image');
+module.exports = multer({storage: storage, limits: { fileSize: maxSize }}).single('image');

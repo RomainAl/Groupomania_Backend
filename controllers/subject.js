@@ -7,9 +7,9 @@ const fs = require('fs');
 
 // Create and Save a new subject
 exports.create = (req, res, next) => {
-  
+
   if (req.file === undefined){
-    subjectObject = { ...req.body };
+    subjectObject = { ...req.body};
   } else {
     subjectObject = {
       ...JSON.parse(req.body.subject),
@@ -31,7 +31,7 @@ exports.create = (req, res, next) => {
     .catch(err => {
       res.status(500).send({
         message:
-          "Some error occurred while creating the subject."
+          err.errors[0].message || "Some error occurred while creating the subject."
       });
     });
 
@@ -43,7 +43,10 @@ exports.findAll = (req, res, next) => {
   const title = req.query.title;
   var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
 
-  Subject.findAll({ where: condition, include: ["comment", "user"] })
+  Subject.findAll({ 
+    where: condition, include: ["comment", "user"],
+    order: [['id', 'DESC']],
+  })
     .then(data => {
       res.send(data);
     })
@@ -237,7 +240,10 @@ exports.deleteAll = (req, res, next) => {
 // find all published subject
 exports.findAllPublished = (req, res, next) => {
 
-  Subject.findAll({ where: { published: true } })
+  Subject.findAll({ 
+    where: { published: true },
+    order: [['id', 'DESC']],
+   })
     .then(data => {
       res.send(data);
     })

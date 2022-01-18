@@ -37,6 +37,7 @@ exports.create = (req, res, next) => {
 exports.findAll = (req, res, next) => {
   Comment.findAll({ 
     where: {},
+    order: [['id', 'DESC']],
     include: ["subject", "user"]  })
     .then(data => {
       res.send(data);
