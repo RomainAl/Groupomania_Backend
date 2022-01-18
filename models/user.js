@@ -25,12 +25,6 @@ module.exports = (sequelize, Sequelize) => {
     password: {
       type: Sequelize.STRING,
       allowNull: false,
-      /*validate: {
-        len: {
-          args: [8, 50],
-          msg: 'Your full name may be 8 to 50 characters only.'
-        }
-      }*/
     },
 
     firstname: {
@@ -48,13 +42,13 @@ module.exports = (sequelize, Sequelize) => {
     phonenumber: {
       type: Sequelize.INTEGER,
       allowNull: false,
-      defaultValue: 0
-      /*validate: {
+      defaultValue: 0,
+      validate: {
         isNumeric: {
             args: true,
             msg: 'The phone number must be an integer'
         }
-      }*/
+      }
     },
 
     role: {

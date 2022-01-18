@@ -15,6 +15,7 @@ exports.create = (req, res, next) => {
   // Create a comment
   const comment = {
     text: req.body.text,
+    author: req.body.author,
     subjectId: req.body.subjectId,
     userId: req.userId
   };

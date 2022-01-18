@@ -1,7 +1,7 @@
 module.exports = (sequelize, Sequelize) => {
   const Comment = sequelize.define("comments", {
     text: {
-      type: Sequelize.TEXT,
+      type: Sequelize.STRING,
       allowNull: false,
       validate: {
         len: {
@@ -9,6 +9,11 @@ module.exports = (sequelize, Sequelize) => {
             msg: 'Your comment may be between 1 to 255 characters only.'
         }
       }
+    },
+    author: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      defaultValue: ''
     }
   });
 
