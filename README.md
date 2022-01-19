@@ -15,7 +15,7 @@ npm install --save multer
 
 ```
 ## Database mySQL
-Créer la database "groupemomani_socialnetwork" en amont
+Créer la database "groupomania_socialnetwork" en amont
 Puis aller dans le fichier de configuration "config/db.config/js" pour remplir le user name et le password de myQSL.
 ```
 USER: "", // Remplir
