@@ -2,9 +2,9 @@
 
 module.exports = {
   HOST: "localhost",
-  USER: "root",
-  PASSWORD: "deadAL007!?",
-  DB: "groupomania_socialnetwork",
+  USER: "", // Remplir
+  PASSWORD: "", // Remplir
+  DB: "groupomania_socialnetwork", // Créer la database mySQL en amont
   dialect: "mysql",
   pool: {
     max: 5,
