@@ -6,28 +6,22 @@ const Subject = db.subject;
 const Comment = db.comment;
 const User = db.user;
 const Op = db.Sequelize.Op;
-const fs = require('fs');
+const fs = require('fs');  // file system pour la suppression des fichiers images du serveur
 
 // Create and Save a new subject
 exports.create = (req, res, next) => {
 
   if (req.file === undefined){
-    subjectObject = { ...req.body};
+    subjectObject = { ...req.body, userId: req.userId};
   } else {
     subjectObject = {
-      ...JSON.parse(req.body.subject),
-      imageUrl: `${req.protocol}://${req.get('host')}/app/images/${req.file.filename}`
+      ...req.body, userId: req.userId, 
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` // enregistrement de l'image dans "image" sur le serveur
     };
   }
 
-  // Create a subject
-  const subject = {
-    ...subjectObject,
-    userId: req.userId
-  };
-
   // Save subject in the database
-  Subject.create(subject, next)
+  Subject.create(subjectObject, next)
     .then(data => {
       res.send(data);
     })
@@ -90,12 +84,12 @@ exports.update = (req, res, next) => {
 
   const id = req.params.id;
 
-  if (req.file === undefined){ 
-    subjectObject = { ...req.body };
+  if (req.file === undefined){
+    subjectObject = { ...req.body,};
   } else {
     subjectObject = {
-      ...JSON.parse(req.body.subject),
-      imageUrl: `${req.protocol}://${req.get('host')}/app/images/${req.file.filename}`
+      ...req.body, 
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` // enregistrement de l'image dans "image" sur le serveur
     };
   }
 
@@ -113,7 +107,7 @@ exports.update = (req, res, next) => {
 
         } else {
 
-          Subject.update(req.body, {
+          Subject.update(subjectObject, {
             where: { id: id }
           })
             .then(num => {
@@ -164,25 +158,29 @@ exports.delete = (req, res, next) => {
             truncate: false
           })
             .then(nums => {
-              Subject.destroy({
-                where: { id: id }
-              })
-                .then(num => {
-                  if (num == 1) {
-                    res.send({
-                      message: "subject was deleted successfully!"
-                    });
-                  } else {
-                    res.send({
-                      message: `Cannot delete subject with id=${id}. Maybe subject was not found!`
-                    });
-                  }
+              const filename = data.imageUrl.split('/images/')[1];
+              const path = __dirname.split('/backend/')[0] + `/backend/images/${filename}`;
+              fs.unlink(path, () => {
+                Subject.destroy({
+                  where: { id: id }
                 })
-                .catch(err => {
-                  res.status(500).send({
-                    message: "Could not delete subject with id=" + id
+                  .then(num => {
+                    if (num == 1) {
+                      res.send({
+                        message: "subject was deleted successfully!"
+                      });
+                    } else {
+                      res.send({
+                        message: `Cannot delete subject with id=${id}. Maybe subject was not found!`
+                      });
+                    }
+                  })
+                  .catch(err => {
+                    res.status(500).send({
+                      message: "Could not delete subject with id=" + id
+                    });
                   });
-                });
+              });
             })
             .catch(err => {
               res.status(500).send({

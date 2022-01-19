@@ -8,7 +8,7 @@ const db = require("./models");
 const commentRoutes = require('./routes/comment'); // charge les routes
 const subjectRoutes = require('./routes/subject'); // charge les routes
 const userRoutes = require('./routes/user'); // charge les routes
-const path = require('path'); // permet de retrouver les paths des images (work in progress)
+const path = require('path'); // permet de retrouver les paths des images
 
 const app = express();
 

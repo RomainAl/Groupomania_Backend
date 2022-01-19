@@ -9,12 +9,6 @@ const upload = async (req, res, next) => {
     next();
   } catch (err) {
     console.log(err);
-
-    if (err.code == "LIMIT_FILE_SIZE") {
-      return res.status(500).send({
-        message: "File size cannot be larger than 2MB!",
-      });
-    }
   
     res.status(500).send({
       message: `Could not upload the file: ${req.file.originalname}. ${err}`,
