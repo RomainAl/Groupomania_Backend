@@ -1,3 +1,6 @@
+//-----------------------------------
+// Schema model MySQL pour les commentaires
+//-----------------------------------
 module.exports = (sequelize, Sequelize) => {
   const Comment = sequelize.define("comments", {
     text: {
