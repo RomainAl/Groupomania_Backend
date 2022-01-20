@@ -220,11 +220,6 @@ exports.signin = (req, res, next) => {
             res.status(200).send({
                 id: user.id,
                 username: user.username,
-                email: user.email,
-                firstname: user.firstname,
-                lastname: user.lastname,
-                phonenumber: user.phonenumber,
-                role: user.role,
                 accessToken: token
             });
 
