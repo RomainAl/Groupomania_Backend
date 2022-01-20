@@ -5,13 +5,12 @@
 ## Project setup
 ```
 npm init (put server.js as input)
-npm install --save express
-npm install --save mysql2
-npm install --save sequelize
+npm install express sequelize mysql2 cors --save
 npm install sequelize-cli -g
 npm install --save bcrypt
 npm install --save jsonwebtoken
 npm install --save multer
+npm install --save dotenv
 
 ```
 ## Database mySQL
