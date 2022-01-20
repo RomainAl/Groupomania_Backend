@@ -132,7 +132,7 @@ exports.update = (req, res, next) => {
     .catch(err => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while updating subject."
+          err.errors[0].message || "Some error occurred while updating subject."
       });
     });
 

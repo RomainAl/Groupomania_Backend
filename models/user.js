@@ -43,15 +43,9 @@ module.exports = (sequelize, Sequelize) => {
     },
 
     phonenumber: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.STRING,
       allowNull: false,
-      defaultValue: 0,
-      validate: {
-        isNumeric: {
-            args: true,
-            msg: 'The phone number must be an integer'
-        }
-      }
+      defaultValue: '',
     },
 
     role: {

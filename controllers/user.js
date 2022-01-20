@@ -24,7 +24,14 @@ exports.findOne = (req, res, next) => {
     User.findByPk(id, { include: ["subject", "comment"] })
     .then(data => {
       if (data) {
-        res.send(data);
+        const theuser = {
+          username: data.username,
+          firstname: data.firstname,
+          lastname: data.lastname,
+          email: data.email,
+          phonenumber: data.phonenumber,
+        }
+        res.send(theuser);
       } else {
         res.status(404).send({
           message: `Cannot find user with id=${id}.`
@@ -218,9 +225,11 @@ exports.signin = (req, res, next) => {
           });
 
             res.status(200).send({
+                // Envoi du contenu "non sensible"
                 id: user.id,
                 username: user.username,
-                accessToken: token
+                accessToken: token,
+                role: user.role,
             });
 
         })
