@@ -1,3 +1,3 @@
 module.exports = {
-  secret: process.env.secretCode
+  secret: process.env.secretCode // à remplir
 };
