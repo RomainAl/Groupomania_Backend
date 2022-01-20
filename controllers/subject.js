@@ -158,9 +158,7 @@ exports.delete = (req, res, next) => {
             truncate: false
           })
             .then(nums => {
-              const filename = data.imageUrl.split('/images/')[1];
-              const path = __dirname.split('/backend/')[0] + `/backend/images/${filename}`;
-              fs.unlink(path, () => {
+              if (data.imageUrl === ''){
                 Subject.destroy({
                   where: { id: id }
                 })
@@ -180,7 +178,31 @@ exports.delete = (req, res, next) => {
                       message: "Could not delete subject with id=" + id
                     });
                   });
-              });
+              } else {
+                const filename = data.imageUrl.split('/images/')[1];
+                const path = __dirname.split('/backend/')[0] + `/backend/images/${filename}`;
+                fs.unlink(path, () => {
+                  Subject.destroy({
+                    where: { id: id }
+                  })
+                    .then(num => {
+                      if (num == 1) {
+                        res.send({
+                          message: "subject was deleted successfully!"
+                        });
+                      } else {
+                        res.send({
+                          message: `Cannot delete subject with id=${id}. Maybe subject was not found!`
+                        });
+                      }
+                    })
+                    .catch(err => {
+                      res.status(500).send({
+                        message: "Could not delete subject with id=" + id
+                      });
+                    });
+                });
+              }
             })
             .catch(err => {
               res.status(500).send({
